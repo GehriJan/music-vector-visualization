@@ -1,42 +1,36 @@
+import psycopg
+import os
 from pgvector.psycopg import register_vector
-from pgvector.sqlalchemy import Vector
-#import psycopg
-from load import get_songs_from_csv
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
+from load import get_insert_statement
 
-from sqlalchemy import create_engine, text, Table, MetaData, Column, Integer, VARCHAR
+conn = psycopg.connect(
+    f"dbname='{os.environ["POSTGRES_DB"]}' user='{os.environ["POSTGRES_USER"]}' password='{os.environ["POSTGRES_PASSWORD"]}' host='localhost' port='5432'"
+)
+cur = conn.cursor()
 
-def get_db_engine():
-    return create_engine('postgresql://user:password@localhost:5432/vector')
+cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
+register_vector(conn)
 
-with get_db_engine().connect() as conn:
-    print(conn)
-    conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-    conn.commit()
-    print("created extension")
-    # Create table
-    conn.execute(text("DROP TABLE IF EXISTS songs"))
-    conn.commit()
-    print("dropd")
+# Create table
+cur.execute("DROP TABLE IF EXISTS songs")
+cur.execute(
+    "CREATE TABLE songs (\
+    id bigserial PRIMARY KEY,\
+    name varchar(1000),\
+    artist varchar(1000),\
+    genre varchar(50),\
+    embedding vector(11)\
+)")
 
-    m = MetaData()
-    t = Table("songs", m, Column("track_id", VARCHAR),Column("track_name", VARCHAR), Column("artist_names", VARCHAR), Column("genre_name", VARCHAR), Column("embedding", Vector))
-    print("created")
+# Insert data to DB
+insertStatement = get_insert_statement("data/train.csv")
+cur.execute(insertStatement)
+# Get data for dimensionality reduction
+cur.execute("SELECT count(*) FROM songs")
+print("im here")
+data = cur.fetchall()
+print(data)
 
-    # Insert data to DB
-    data = get_songs_from_csv("data/train.csv")
-    conn.execute(t.insert(),data)
-    conn.commit()
-    print("inserted")
-
-    # Get data for dimensionality reduction
-    data = conn.execute(text("SELECT * FROM songs"))
-    conn.commit()
-    print("im here")
-    #print(data)
-
-    # Setup PCA and t-SNE functions
-    pca = PCA(2)
-    tsne = TSNE(2)
-
+# Setup PCA and t-SNE functions
+#pca = PCA(2)
+#tsne = TSNE(2)
