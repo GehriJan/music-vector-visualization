@@ -1,11 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from sklearn.decomposition import PCA
 
 # Generate random data with denser points in the middle
 np.random.seed(0)
 n_points = 100
-
+font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 20}
+matplotlib.rc('font', **font)
 # Clustered points with more density near the center
 x = np.concatenate(
     [
@@ -27,10 +31,10 @@ components = pca.components_
 
 # Plot the original data
 plt.figure(figsize=(10, 8))
-plt.scatter(data[:, 0], data[:, 1], alpha=0.5, color="blue", label="Original Data")
+plt.scatter(data[:, 0], data[:, 1], alpha=0.5, color="blue", label="Originale Daten")
 plt.xlabel("Feature 1")
 plt.ylabel("Feature 2")
-plt.title("Principal Component Analysis (PCA)")
+plt.title("PCA illustratives Beispiel", pad=25)
 
 # Plot the principal components as lines with labels
 for i, (length, vector) in enumerate(zip(pca.explained_variance_, components)):
@@ -56,9 +60,9 @@ for i, (length, vector) in enumerate(zip(pca.explained_variance_, components)):
     plt.text(
         mean[0] + v[0] * 0.85,
         mean[1] + v[1] * 0.85,
-        f"Principal\nComponent {i + 1}",
+        f"PC{i + 1}",
         color="red",
-        fontsize=12,
+        fontsize=20,
         ha="center",
         va="center",
         fontweight="bold",
