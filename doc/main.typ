@@ -2,7 +2,9 @@
 
 #show: ieee.with(
   title: [Visualisierung von Musikdaten mittels t-SNE und PCA am Beispiel pgvector],
-  abstract: [#lorem(60)],
+  abstract: [
+    //todo: write abstract
+  ],
   authors: (
     (
       name: "Jannis Gehring",
@@ -19,11 +21,11 @@
 #outline()
 = Grundlagen
 
-== t-SNE
-
 == PCA
 
-== pgvector
+== t-SNE
+
+==
 
 = Installation
 
