@@ -3,7 +3,7 @@
 
 #init-acronyms((
   "PCA": ("Principal Component Analysis"),
-  "t-SNE": ("t-distributed Stochastic Neighbour Embedding"),
+  "t-SNE": ("t-distributed SNE"),
   "SNE": ("Stochastic Neighbour Embedding")
 ))
 
@@ -26,7 +26,11 @@
   figure-supplement: [Fig.],
 )
 #outline()
-= Grundlagen
+
+= Einleitung
+In modernen Datawarehouse-systemen handelt es sich um große und vielfältige Datenmengen. Um aus diesen Daten sinnvolle Schlussfolgerungen zu ziehen, müssen sie meist aufs wesentliche reduziert werden. Eine Methode ist hierbei die Dimensionsreduktion, bei der hochdimensionale Daten (bis zu mehrere tausend Dimensionen) in niedrig-dimensionale Daten (meist 2/3-dimensional) umgewandelt werden. Im Folgenden werden die Dimensionsreduktionsverfahren #acr("PCA") und #acr("t-SNE") beschrieben und implementiert. Die Datenspeicherung erfolgt in einer PostgreSQL Datenbank. Als Datengrundlage dient ein kaggle-Datensatz mit Musikdaten aus Spotify.
+
+= Theoretische Grundlagen
 
 == #acrfull("PCA")
 #acrfull("PCA") ist ein lineares Verfahren zur Dimensionsreduktion. Es wurde in der ersten Hälfte des zwanzigsten Jahrhunderts entwickelt, fand aber aufgrund seiner Berechnungsanforderungen erst in den 60ern breite Anwendung. @MACKIEWICZ1993303
@@ -60,23 +64,66 @@ Genau die gleichen Beziehungen werden im niedrig-dimensionalen Raum $Y supset {y
 
 Ziel von #acr("SNE") ist nun, die Punkte aus $X$ so auf $Y$ abzubilden, dass $q_(j|i)$ für alle $i$ und $j$ möglichst nahe an $p_(j|i)$ ist. Dies wird mittels eines Gradient-Descent Algorithmus durchgeführt.
 
-#acr("t-SNE") erweitert #acr("SNE") in zwei Weisen. Zum Einen passt es die Wahrscheinlichkeitsverteilungen so an, sodass $p_(i j) = p_(j i)$ und $p_(i j) = p_(j i)$ $forall i,j$, zum Anderen nutzt es im niedrig-dimensionalen Raum nicht die Gaußverteilung zur Ermittlung des Nachbarn, sondern die t-Verteilung nach Student.
+#acr("t-SNE") erweitert #acr("SNE") in zwei Weisen. Zum Einen werden $p$ und $q$ so neu definiert, dass $p_(i j) = p_(j i)$ und $p_(i j) = p_(j i)$ $forall i,j$.
+Zum Anderen nutzt es im niedrig-dimensionalen Raum nicht die Gaußverteilung zur Ermittlung des Nachbarn, sondern die t-Verteilung nach Student.
 
 == Vergleich von #acr("PCA") und #acr("t-SNE")
 Im Folgenden werden #acr("PCA") und #acr("t-SNE") anhand unterschiedlicher Kriterien verglichen @comparison:
 #table(
   columns: (auto, auto, auto),
-  align: horizon,
+  align: center,
   table.header(
     [*Kriterium*],[* #acr("PCA") *], [*#acr("t-SNE")*],
   ),
   [Ziel der Dimensionsreduktion], [Maximieren der Varianz], [Erhalten von lokaler Struktur],
   [Linearität], [Linear], [Nicht-Linear],
-  [Iterativ?], [Ja], [Nein],
-  [Berechnungs-komplexität], [$Omicron (d^2 n + n^3)$], [$Omicron (n^2)$]
+  [Iterativ?], [Nein], [Ja],
+  [Berechnungs-komplexität], [$Omicron (d^2 n + n^3)$\*], [$Omicron (n^2)$]
 )
+\* $d$ ist die Anzahl der Dimensionen des Ursprungsraumes, $n$ die Anzahl der Datenpunkte
 
-= Installation
+= Verwendete Technologien
+== Datenbank: PostgreSQL mit pgvector und psycopg
+*PostgreSQL* ist ein opensource relationales Datenbankmanagementsystem. Es geht zurück auf das POSTGRES Projekt von 1986 an der University of California, wird aber immer noch weiterentwickelt und ist weit verbreitet. @postgresdocs
+PostgreSQL kann sowohl mit einem cli als auch über einen Webclient, pgadmin, bedient werden.
 
+*Pgvector* ist eine Erweiterung von PostgreSQL, die den Datentyp _vector_ einführt und es so erlaubt, Vektoren in SQL zu speichern. Desweiteren verfügt sie über Funktionen wie nearest-neighbour-search und  Abstandsberechnungen (cosine-distance, L1/L2 distance, etc.). @pgvectorgithub
+
+*Psycopg* ist ein PostgreSQL Adapter für Python, der es ermöglicht, ```sql INSERT```, ```sql UPDATE```, ```sql SELECT``` sowie viele weitere SQL-Statements direkt aus Python heraus auszuführen. Da Psycopg auch Pgvector unterstützt, erlaubt es, alle für dieses Projekt relevanten Datenbankoperationen direkt in Python zu schreiben. @psycopgdocs
+
+== Algorithmen: scikit-learn
+*scikit-learn* ist eine Python Bibliothek für Machine Learning. Neben Klassifikations-, Regressions-, Clustering- und weiteren Algorithmen implementiert scikit-learn auch Dimensionsreduktionsverfahren wie #acr("PCA") und #acr("t-SNE"). @scikitlearn
+
+== Visualisierung: plotly
+*plotly* ist eine opensource Visualisierungsbibliothek für Python, die mehr als 40 unterschiedliche Graphen unterstützt. Plotly ist für dieses Projekt besonders gut geeignet, weil die Visualisierungen interaktiv sind, dass heißt es kann beispielsweise gezoomt werden und Informationen zu einzelnen Datenpunkten können _on-hover_ angezeigt werden. @plotly
+
+== Datensatz:
+Als Datengrundlage dient ein Datensatz von kaggle namens "Spotify Tracks Genre". Dieser verfügt über 89741 Songs aus 114 Genres.
+Zu jedem Song werden neben der track_id 19 Werte gespeichert, von denen die Folgenden für dieses Projekt von Interesse sind @data:
+1. *Meta-informationen*
+  - Name des Songs
+  - Name des Künstlers
+  - Name des Genres
+2. *Audio-parameter*
+
+  Diese Parameter werden von Spotify ermittelt und beziehen sich auf den musikalischen Charakter des Songs.
+  #figure(
+    table(
+      columns: (auto, auto),
+      align: center,
+      table.header(
+        [*Parameter*],[*Interval/Einheit*],
+      ),
+      [Danceability], [\[0;1\]],
+      [Energy], [\[0;1\]],
+      [Loudness], [db],
+      [Speechiness], [\[0;1\]],
+      [Acousticness], [\[0;1\]],
+      [Instrumentalness], [\[0;1\]],
+      [Liveness], [\[0;1\]],
+      [Valence\*], [\[0;1\]],
+    ),
+  )
+  \* _Valence_ beschreibt, wie musikalisch positiv ein Song ist.
 = Umsetzungsbeispiel
 
