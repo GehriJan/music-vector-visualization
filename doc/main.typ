@@ -166,7 +166,7 @@ Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. An
   ```sh pip install -r requirements.txt```
 6. *Erstellen der Datenbank in pgAdmin*\
   - Aufrufen von ```sh 127.0.0.1:5016```
-  - Anmelden mit mail: _batiken-tableau-0u\@icloud.com_ und Passwort: _password_
+  - Anmelden mit E-mail: _batiken-tableau-0u\@icloud.com_ und Passwort: _password_
   - Anlegen einer neuen Datenbank namens _vector_
 
 == How-to: Nutzungsprozess

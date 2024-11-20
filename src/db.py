@@ -16,7 +16,6 @@ class DB():
             'host':'localhost',
             'port':'5432'
         }
-        print(config)
         conn = psycopg.connect(**config)
         cur = conn.cursor()
         cur.execute(sql.SQL("CREATE EXTENSION IF NOT EXISTS vector"))
