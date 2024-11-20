@@ -15,13 +15,13 @@ genreConfigs = {
 }
 genres = genreConfigs["config3"]
 vectors, labels = db.selectSongs(["metal", "sleep", "classical", "dubstep"])
+vectors = normalize(vectors)
 
 # Setup PCA and t-SNE functions
 pca = PCA(2)
 tsne = TSNE(2)
 
 # Execute functions
-vectors = normalize(vectors)
 outputVectorsPCA = pca.fit_transform(vectors)
 outputVectorsTSNE = tsne.fit_transform(vectors)
 

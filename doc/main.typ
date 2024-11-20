@@ -7,6 +7,7 @@
   "SNE": ("Stochastic Neighbour Embedding")
 ))
 
+#set page(numbering: "1")
 #show: ieee.with(
   title: [Visualisierung von Musikdaten mittels t-SNE und PCA am Beispiel pgvector],
   abstract: [
@@ -23,9 +24,15 @@
   ),
   index-terms: (),
   bibliography: bibliography("refs.bib"),
-  figure-supplement: [Fig.],
+  paper-size: "din-d4",
+  figure-supplement: [Figure],
 )
-#outline()
+#show raw: it => text(
+      font: "PT Mono",
+      it
+)
+
+#outline(depth: 1)
 
 = Einleitung
 In modernen Datawarehouse-systemen handelt es sich um große und vielfältige Datenmengen. Um aus diesen Daten sinnvolle Schlussfolgerungen zu ziehen, müssen sie meist aufs wesentliche reduziert werden. Eine Methode ist hierbei die Dimensionsreduktion, bei der hochdimensionale Daten (bis zu mehrere tausend Dimensionen) in niedrig-dimensionale Daten (meist 2/3-dimensional) umgewandelt werden. Im Folgenden werden die Dimensionsreduktionsverfahren #acr("PCA") und #acr("t-SNE") beschrieben und implementiert. Die Datenspeicherung erfolgt in einer PostgreSQL Datenbank. Als Datengrundlage dient ein kaggle-Datensatz mit Musikdaten aus Spotify.
@@ -97,7 +104,7 @@ PostgreSQL kann sowohl mit einem cli als auch über einen Webclient, pgadmin, be
 == Visualisierung: plotly
 *plotly* ist eine opensource Visualisierungsbibliothek für Python, die mehr als 40 unterschiedliche Graphen unterstützt. Plotly ist für dieses Projekt besonders gut geeignet, weil die Visualisierungen interaktiv sind, dass heißt es kann beispielsweise gezoomt werden und Informationen zu einzelnen Datenpunkten können _on-hover_ angezeigt werden. @plotly
 
-== Datensatz:
+== Datensatz: <datensatz>
 Als Datengrundlage dient ein Datensatz von kaggle namens "Spotify Tracks Genre". Dieser verfügt über 89741 Songs aus 114 Genres.
 Zu jedem Song werden neben der track_id 19 Werte gespeichert, von denen die Folgenden für dieses Projekt von Interesse sind @data:
 1. *Meta-informationen*
@@ -126,4 +133,43 @@ Zu jedem Song werden neben der track_id 19 Werte gespeichert, von denen die Folg
   )
   \* _Valence_ beschreibt, wie musikalisch positiv ein Song ist.
 = Umsetzungsbeispiel
+
+== Projektaufbau
+Das Projekt ist in drei Hauptordner aufgeteilt:
+1. ``` ./data ```\
+  Dieser Ordner enthält die in einer csv-Datei gespeicherten Daten. (Siehe auch @datensatz)
+2. ``` ./doc ```\
+  Dieser Ordner enthält alle Dokumente, die zur Erstellung und Kompilierung dieser Dokumentation mit #link("https://typst.app/")[Typst] notwendig sind
+3. ``` ./src ```\
+  Der source-code des Projekts. (Siehe auch @code)
+
+== Codeablauf <code>
+Im folgenden wird der implementierte Prozess aus prozeduraler Sicht und Datensicht beschrieben:
+#figure(
+  image("assets/flowchart.drawio.png"),
+  caption: [Flowchart der Implementierung]
+)
+
+
+== How-to: Setupprozess
+Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. Annahme ist, dass alle Terminalcommands aus dem obersten Verzeichnis des git-repositories ausgeführt werden und Docker und Python mit venv installiert sind.
+
+1. *Starten von Docker*\
+  macOS: ```sh open -a docker```
+2. *Starten der Docker-container*\
+  ```sh docker-compose up -d```
+3. *Aufsetzen einer venv*\
+  ```sh python3 -m venv venv```
+4. *Starten der venv*\
+  zsh/macOS: ```sh source venv/bin/activate ```
+5. *Installieren der pip-packages*\
+  ```sh pip install -r requirements.txt```
+6. *Erstellen der Datenbank in pgAdmin*\
+  - Aufrufen von ```sh 127.0.0.1:5016```
+  - Anmelden mit mail: _batiken-tableau-0u\@icloud.com_ und Passwort: _password_
+  - Anlegen einer neuen Datenbank namens _vector_
+
+== How-to: Nutzungsprozess
+
+
 

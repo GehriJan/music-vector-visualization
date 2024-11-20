@@ -2,38 +2,42 @@ import csv
 import os
 from pgvector.psycopg import register_vector
 import psycopg
+from psycopg import sql
 import numpy as np
 import pandas as pd
 
 
 class DB():
     def __init__(self):
-        conn = psycopg.connect(
-            f"dbname='{os.environ["POSTGRES_DB"]}'\
-            user='{os.environ["POSTGRES_USER"]}'\
-            password='{os.environ["POSTGRES_PASSWORD"]}'\
-            host='localhost' port='5432'"
-        )
+        config ={
+            'user': os.environ["POSTGRES_USER"],
+            'dbname':os.environ["POSTGRES_DB"],
+            'password':os.environ["POSTGRES_PASSWORD"],
+            'host':'localhost',
+            'port':'5432'
+        }
+        print(config)
+        conn = psycopg.connect(**config)
         cur = conn.cursor()
-        cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
+        cur.execute(sql.SQL("CREATE EXTENSION IF NOT EXISTS vector"))
         register_vector(conn)
 
         # Create table
-        cur.execute("DROP TABLE IF EXISTS songs")
-        cur.execute(
+        cur.execute(sql.SQL("DROP TABLE IF EXISTS songs"))
+        cur.execute(sql.SQL(
             "CREATE TABLE songs (\
             id bigserial PRIMARY KEY,\
             name varchar(1000),\
             artist varchar(1000),\
             genre varchar(50),\
             embedding vector(8)\
-        )")
+        )"))
         self.conn = conn
         self.cur = cur
 
     def insertCSVtoDB(self, path: str):
         insertStatement = get_insert_statement(path)
-        self.cur.execute(insertStatement)
+        self.cur.execute(sql.SQL(insertStatement))
 
     def selectSongs(self,genres: list[str]):
         genreSelection: str = str()
@@ -46,7 +50,7 @@ class DB():
             WHERE genre in ({genreSelection})
             ORDER BY name
         """
-        self.cur.execute(selectStatement)
+        self.cur.execute(sql.SQL(selectStatement))
         data = self.cur.fetchall()
         vectors = getVectors(data)
         labels = pd.DataFrame({
@@ -61,7 +65,7 @@ class DB():
             FROM songs
             ORDER BY genre ASC
         """
-        self.cur.execute(selectStatement)
+        self.cur.execute(sql.SQL(selectStatement))
         data = self.cur.fetchall()
         genres = list(map(lambda genreTuple: genreTuple[0], data))
         return genres
