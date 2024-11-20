@@ -2,21 +2,20 @@ from db import DB
 from plot import plot
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
-import numpy as np
-import pandas as pd
+from utils import normalize, getDataframe
 
-def normalize(vectors):
-    vectors = vectors / vectors.max(axis=0)
-    vectors = np.abs(vectors)
-    return vectors
 
+# Execute db operations
 db = DB()
-
 db.insertCSVtoDB("data/train.csv")
+genreConfigs = {
+    "config1": ["sad", "sleep", "piano", "dubstep"],
+    "config2": ["electronic", "acoustic", "opera", "k-pop"],
+    "config3": ["iranian", "brazil", "german", "british"],
+}
+genres = genreConfigs["config3"]
+vectors, labels = db.selectSongs(["metal", "sleep", "classical", "dubstep"])
 
-genres = ["sleep", "dubstep", "funk", "german"]
-vectors, labels = db.selectSongs(genres)
-print(db.getGenres())
 # Setup PCA and t-SNE functions
 pca = PCA(2)
 tsne = TSNE(2)
@@ -25,19 +24,12 @@ tsne = TSNE(2)
 vectors = normalize(vectors)
 outputVectorsPCA = pca.fit_transform(vectors)
 outputVectorsTSNE = tsne.fit_transform(vectors)
-print(pca.explained_variance_)
-print(pca.explained_variance_ratio_)
-print(pca.singular_values_)
-# Prepare Dataframe-datastructure for plotting
-df_pca = labels.copy().assign(
-    x=list(map(lambda coord: coord[0], outputVectorsPCA)),
-    y=list(map(lambda coord: coord[1], outputVectorsPCA)),
-)
-df_tsne = labels.copy().assign(
-    x=list(map(lambda coord: coord[0], outputVectorsTSNE)),
-    y=list(map(lambda coord: coord[1], outputVectorsTSNE)),
-)
 
+# Prepare Dataframe-datastructure for plotting
+df_pca = getDataframe(labels, outputVectorsPCA)
+df_tsne = getDataframe(labels, outputVectorsTSNE)
+
+# Plot
 print(f"% Stats\n% Number of Genres: {len(genres)}\n% Number of Songs: {len(vectors)}")
 plot("PCA",df_pca)
 plot("TSNE",df_tsne)
