@@ -6,7 +6,6 @@ from psycopg import sql
 import numpy as np
 import pandas as pd
 
-
 class DB():
     def __init__(self):
         config ={
@@ -68,11 +67,6 @@ class DB():
         data = self.cur.fetchall()
         genres = list(map(lambda genreTuple: genreTuple[0], data))
         return genres
-
-
-
-
-
 
 def get_insert_statement(path: str):
     output: str = "INSERT INTO songs (name, artist, genre, embedding)\nVALUES"

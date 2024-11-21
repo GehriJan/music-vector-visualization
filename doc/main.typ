@@ -10,9 +10,6 @@
 #set page(numbering: "1")
 #show: ieee.with(
   title: [Visualisierung von Musikdaten mittels t-SNE und PCA am Beispiel pgvector],
-  abstract: [
-    //todo: write abstract
-  ],
   authors: (
     (
       name: "Jannis Gehring",
@@ -34,8 +31,8 @@
 
 #outline(depth: 1)
 
-= Einleitung
-In modernen Datawarehouse-systemen handelt es sich um große und vielfältige Datenmengen. Um aus diesen Daten sinnvolle Schlussfolgerungen zu ziehen, müssen sie meist aufs wesentliche reduziert werden. Eine Methode ist hierbei die Dimensionsreduktion, bei der hochdimensionale Daten (bis zu mehrere tausend Dimensionen) in niedrig-dimensionale Daten (meist 2/3-dimensional) umgewandelt werden. Im Folgenden werden die Dimensionsreduktionsverfahren #acr("PCA") und #acr("t-SNE") beschrieben und implementiert. Die Datenspeicherung erfolgt in einer PostgreSQL Datenbank. Als Datengrundlage dient ein kaggle-Datensatz mit Musikdaten aus Spotify.
+= Einleitung/Abstract
+In modernen Datawarehouse-systemen handelt es sich um große und vielfältige Datenmengen. Um aus diesen Daten sinnvolle Schlussfolgerungen zu ziehen, müssen sie meist aufs wesentliche reduziert werden. Eine Methode ist hierbei die Dimensionsreduktion, bei der hochdimensionale Daten (bis zu mehrere tausend Dimensionen) in niedrig-dimensionale Daten (meist 2/3-dimensional) umgewandelt werden. Im Folgenden werden die Dimensionsreduktionsverfahren #acr("PCA") und #acr("t-SNE") beschrieben und die Implementierung in scikit-learn vorgestellt. Die Datenspeicherung erfolgt in einer PostgreSQL Datenbank. Als Datengrundlage dient ein kaggle-Datensatz mit Musikdaten aus Spotify.
 
 = Theoretische Grundlagen
 
@@ -74,7 +71,7 @@ Ziel von #acr("SNE") ist nun, die Punkte aus $X$ so auf $Y$ abzubilden, dass $q_
 #acr("t-SNE") erweitert #acr("SNE") in zwei Weisen. Zum Einen werden $p$ und $q$ so neu definiert, dass $p_(i j) = p_(j i)$ und $p_(i j) = p_(j i)$ $forall i,j$.
 Zum Anderen nutzt es im niedrig-dimensionalen Raum nicht die Gaußverteilung zur Ermittlung des Nachbarn, sondern die t-Verteilung nach Student.
 
-== Vergleich von #acr("PCA") und #acr("t-SNE")
+/*== Vergleich von #acr("PCA") und #acr("t-SNE")
 Im Folgenden werden #acr("PCA") und #acr("t-SNE") anhand unterschiedlicher Kriterien verglichen @comparison:
 #table(
   columns: (auto, auto, auto),
@@ -88,7 +85,7 @@ Im Folgenden werden #acr("PCA") und #acr("t-SNE") anhand unterschiedlicher Krite
   [Berechnungs-komplexität], [$Omicron (d^2 n + n^3)$\*], [$Omicron (n^2)$]
 )
 \* $d$ ist die Anzahl der Dimensionen des Ursprungsraumes, $n$ die Anzahl der Datenpunkte
-
+*/
 = Verwendete Technologien
 == Datenbank: PostgreSQL mit pgvector und psycopg
 *PostgreSQL* ist ein opensource relationales Datenbankmanagementsystem. Es geht zurück auf das POSTGRES Projekt von 1986 an der University of California, wird aber immer noch weiterentwickelt und ist weit verbreitet. @postgresdocs
@@ -132,8 +129,7 @@ Zu jedem Song werden neben der track_id 19 Werte gespeichert, von denen die Folg
     ),
   )
   \* _Valence_ beschreibt, wie musikalisch positiv ein Song ist.
-= Umsetzungsbeispiel
-
+/*
 == Projektaufbau
 Das Projekt ist in drei Hauptordner aufgeteilt:
 1. ``` ./data ```\
@@ -142,17 +138,19 @@ Das Projekt ist in drei Hauptordner aufgeteilt:
   Dieser Ordner enthält alle Dokumente, die zur Erstellung und Kompilierung dieser Dokumentation mit #link("https://typst.app/")[Typst] notwendig sind
 3. ``` ./src ```\
   Der source-code des Projekts. (Siehe auch @code)
-
+*/
+#pagebreak()
+= Umsetzungsbeispiel
 == Codeablauf <code>
-Im folgenden wird der implementierte Prozess aus prozeduraler Sicht und Datensicht beschrieben:
+Folgendes Flowchart beschreibt den Ablauf des Programmes:
+
 #figure(
   image("assets/flowchart.drawio.png"),
-  caption: [Flowchart der Implementierung]
-)
-
+  caption: [Flowchart der Implementierung],
+) <flowchart>
 
 == How-to: Setupprozess
-Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. Annahme ist, dass alle Terminalcommands aus dem obersten Verzeichnis des git-repositories ausgeführt werden und Docker und Python mit venv installiert sind.
+Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. Annahme ist, dass alle Terminalcommands aus dem obersten Verzeichnis des git-repositories ausgeführt werden und Docker und Python inklusive venv installiert sind.
 
 1. *Starten von Docker*\
   macOS: ```sh open -a docker```
@@ -170,6 +168,75 @@ Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. An
   - Anlegen einer neuen Datenbank namens _vector_
 
 == How-to: Nutzungsprozess
+Das Programm kann vollständig aus dem Terminal genutzt und konfiguriert werden. Hierzu muss über
+#figure(
+  raw("python3 src/main.py", lang: "sh")
+)
+die Hauptdatei aufgerufen werden.
 
+Folgende Parameter sind notwendig:
+1. ```sh -m / --method```\
+  Hiermit werden die zur Dimensionsreduktion genutzten Verfahren ausgewählt. Aufgrund des einheitlichen Interfaces in scikit-learn sind neben #acr("t-SNE") und klassischem #acr("PCA") noch diverse Abwandlungen von PCA und FastICA wählbar. Die Argumente mappen wie folgt auf die Funktionen:
+    #figure(
+      table(
+        columns: (auto, auto),
+        align: center,
+        table.header(
+          [*Argument*],[*Funktion*],
+        ),
+        [pca], [#acr("PCA")],
+        [kernelpca], [Kernel PCA],
+        [sparsepca], [Sparse PCA],
+        [incrementalpca], [Incremental PCA],
+        [tsne], [#acr("t-SNE")],
+        [fastica], [Fast ICA],
+      ),
+    )
+  Ein falsches Argument bringt das Programm mit einer darauf hinweisenden Exception zum Absturz.
+2. ```sh -g / --genre```\
+  Hier kann eine beliebige Teilmenge der im Datensatz vorliegenden Genres zur Visualisierung ausgewählt werden. Genrenamen, die nicht im Datensatz vorkommen, werden ignoriert.
 
+Die Argumente werden immer durch Leerzeichen voneinander getrennt.
 
+= Ergebnisse
+Die folgenden Charts demonstrieren das Plotting mit diversen Konfigurationen. Die Plots werden Stück für Stück im Browser geöffnet.
+Folgende Features kennzeichnen die Plots:
+
+1. An-/Abwählen einzelner Genres in der Legende
+2. Zooming
+3. Labels mit Titel und Künstler beim Hovern über die Daten
+4. Weitere Funktionen im oberen rechten Eck
+
+#figure(
+  grid(
+    columns: 2,
+    image("assets/config1_pca.png"),
+    image("assets/config1_tsne.png"),
+  ),
+  placement: bottom,
+  scope: "parent",
+  caption: [Command: ```sh python3 src/main.py -m pca tsne -g sad sleep piano dubstep```\
+  Die Genres sleep und dubstep bilden insbesondere bei #acr("t-SNE") zwei Pole, die von sad verbunden werden. Piano umspannt das ganze Spektrum.]
+)
+#figure(
+  grid(
+    columns: 2,
+    image("assets/config2_pca.png"),
+    image("assets/config2_tsne.png"),
+  ),
+  placement: bottom,
+  scope: "parent",
+  caption: [Command: ```sh python3 src/main.py -m pca tsne -g electronic acoustic opera k-pop```\
+  Hier ist grob erkennbar, dass das Genre acoustic eine Brücke zwischen opera und electronic bildet.]
+)
+#figure(
+  grid(
+    columns: 2,
+    image("assets/config3_kernelpca.png"),
+    image("assets/config3_fastica.png"),
+  ),
+  placement: bottom,
+  scope: "parent",
+  caption: [Command: ```sh python3 src/main.py -m kernelpca fastica -g iranian german brazil british ```]
+)
+#pagebreak()

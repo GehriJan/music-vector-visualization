@@ -18,7 +18,6 @@ def normalize(vectors):
     vectors = np.abs(vectors)
     return vectors
 
-
 def getDataframe(labels, outputVectors: np.ndarray):
     x_coords =list(map(lambda coord: coord[0], outputVectors))
     y_coords =list(map(lambda coord: coord[1], outputVectors))

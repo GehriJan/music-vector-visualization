@@ -12,4 +12,9 @@ def plot(method: str, df: pd.DataFrame) -> None:
         hover_name="name",
         hover_data=["artists", "genre"],
     )
+    fig.update_layout(
+        font=dict(
+            size=30,
+        )
+    )
     fig.show()
