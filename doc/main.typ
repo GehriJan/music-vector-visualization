@@ -193,7 +193,7 @@ Folgende Parameter sind notwendig:
     )
   Ein falsches Argument bringt das Programm mit einer darauf hinweisenden Exception zum Absturz.
 2. ```sh -g / --genre```\
-  Hier kann eine beliebige Teilmenge der im Datensatz vorliegenden Genres zur Visualisierung ausgewählt werden. Genrenamen, die nicht im Datensatz vorkommen, werden ignoriert.
+  Hier kann eine beliebige Teilmenge der im Datensatz vorliegenden Genres zur Visualisierung ausgewählt werden. Genrenamen, die nicht im Datensatz vorkommen, werden ignoriert. Alle verfügbaren Genres können in der datei ``` genres.txt``` eingesehen werden.
 
 Die Argumente werden immer durch Leerzeichen voneinander getrennt.
 
