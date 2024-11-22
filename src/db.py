@@ -1,17 +1,18 @@
 import csv
 import os
+from dotenv import load_dotenv
 from pgvector.psycopg import register_vector
 import psycopg
 from psycopg import sql
 import numpy as np
 import pandas as pd
-
+load_dotenv(".env")
 class DB():
     def __init__(self):
         config ={
-            'user': os.environ["POSTGRES_USER"],
-            'dbname':os.environ["POSTGRES_DB"],
-            'password':os.environ["POSTGRES_PASSWORD"],
+            'user': os.environ.get["POSTGRES_USER"],
+            'dbname':os.environ.get["POSTGRES_DB"],
+            'password':os.environ.get["POSTGRES_PASSWORD"],
             'host':'localhost',
             'port':'5432'
         }
