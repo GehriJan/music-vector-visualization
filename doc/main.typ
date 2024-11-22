@@ -28,6 +28,7 @@
       font: "PT Mono",
       it
 )
+#show link: underline
 
 #outline(depth: 1)
 
@@ -152,6 +153,8 @@ Folgendes Flowchart beschreibt den Ablauf des Programmes:
 == How-to: Setupprozess
 Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. Annahme ist, dass alle Terminalcommands aus dem obersten Verzeichnis des git-repositories ausgeführt werden und Docker und Python inklusive venv installiert sind.
 
+1. *Klonen des #link("https://github.com/GehriJan/music-vector-visualization")[Git-Repositories]*\
+  ```sh git clone https://github.com/GehriJan/music-vector-visualization.git```
 1. *Starten von Docker*\
   macOS: ```sh open -a docker```
 2. *Starten der Docker-container*\
@@ -200,6 +203,7 @@ Die Argumente werden immer durch Leerzeichen voneinander getrennt.
 
 = Ergebnisse
 Die folgenden Charts demonstrieren das Plotting mit diversen Konfigurationen. Die Plots werden Stück für Stück im Browser geöffnet.
+#pagebreak()
 Folgende Features kennzeichnen die Plots:
 
 1. An-/Abwählen einzelner Genres in der Legende
