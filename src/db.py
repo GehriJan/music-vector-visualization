@@ -9,9 +9,9 @@ import pandas as pd
 
 load_dotenv(".env")
 
-
 class DB:
     def __init__(self):
+        # connect to database
         config = {
             "user": os.environ["POSTGRES_USER"],
             "dbname": os.environ["POSTGRES_DB"],
@@ -45,6 +45,7 @@ class DB:
         self.cur.execute(sql.SQL(insertStatement))
 
     def selectSongs(self, genres: list[str]):
+        # Build select statement
         genreSelection: str = str()
         for genre in genres:
             genreSelection += f"'{genre}',"
@@ -55,8 +56,10 @@ class DB:
             WHERE genre in ({genreSelection})
             ORDER BY name
         """
+        # Get data from db
         self.cur.execute(sql.SQL(selectStatement))
         data = self.cur.fetchall()
+        # Split data into vectors and labels
         vectors = getVectors(data)
         labels = pd.DataFrame(
             {

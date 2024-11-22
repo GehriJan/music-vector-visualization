@@ -8,6 +8,11 @@
 ))
 
 #set page(numbering: "1")
+#show raw: it => text(
+      font: "PT Mono",
+      it
+)
+#show link: underline
 #show: ieee.with(
   title: [Visualisierung von Musikdaten mittels t-SNE und PCA am Beispiel pgvector],
   authors: (
@@ -15,7 +20,7 @@
       name: "Jannis Gehring",
       department: [INF22B, Data Warehouse],
       organization: [Duale Hochschule Baden-Württemberg (DHBW)],
-      location: [Stuttgart, Deutschland],
+      location: [#link("https://www.github.com/GehriJan/music-vector-visualization")[Github-Repository]],
       email: "inf22115@lehre.dhbw-stuttgart.de"
     ),
   ),
@@ -24,11 +29,6 @@
   paper-size: "din-d4",
   figure-supplement: [Figure],
 )
-#show raw: it => text(
-      font: "PT Mono",
-      it
-)
-#show link: underline
 
 #outline(depth: 1)
 
