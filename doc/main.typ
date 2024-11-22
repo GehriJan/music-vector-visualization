@@ -72,7 +72,7 @@ Ziel von #acr("SNE") ist nun, die Punkte aus $X$ so auf $Y$ abzubilden, dass $q_
 #acr("t-SNE") erweitert #acr("SNE") in zwei Weisen. Zum Einen werden $p$ und $q$ so neu definiert, dass $p_(i j) = p_(j i)$ und $p_(i j) = p_(j i)$ $forall i,j$.
 Zum Anderen nutzt es im niedrig-dimensionalen Raum nicht die Gaußverteilung zur Ermittlung des Nachbarn, sondern die t-Verteilung nach Student.
 
-/*== Vergleich von #acr("PCA") und #acr("t-SNE")
+== Vergleich von #acr("PCA") und #acr("t-SNE")
 Im Folgenden werden #acr("PCA") und #acr("t-SNE") anhand unterschiedlicher Kriterien verglichen @comparison:
 #table(
   columns: (auto, auto, auto),
@@ -86,7 +86,7 @@ Im Folgenden werden #acr("PCA") und #acr("t-SNE") anhand unterschiedlicher Krite
   [Berechnungs-komplexität], [$Omicron (d^2 n + n^3)$\*], [$Omicron (n^2)$]
 )
 \* $d$ ist die Anzahl der Dimensionen des Ursprungsraumes, $n$ die Anzahl der Datenpunkte
-*/
+
 = Verwendete Technologien
 == Datenbank: PostgreSQL mit pgvector und psycopg
 *PostgreSQL* ist ein opensource relationales Datenbankmanagementsystem. Es geht zurück auf das POSTGRES Projekt von 1986 an der University of California, wird aber immer noch weiterentwickelt und ist weit verbreitet. @postgresdocs
