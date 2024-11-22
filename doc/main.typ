@@ -154,7 +154,7 @@ Folgendes Flowchart beschreibt den Ablauf des Programmes:
 Es folgt eine Schritt für Schritt Anleitung für das Aufsetzen der Umgebung. Annahme ist, dass alle Terminalcommands aus dem obersten Verzeichnis des git-repositories ausgeführt werden und Docker und Python inklusive venv installiert sind.
 
 1. *Klonen des #link("https://github.com/GehriJan/music-vector-visualization")[Git-Repositories]*\
-  ```sh git clone https://github.com/GehriJan/music-vector-visualization.git```
+  ```sh git clone https://github.com/GehriJan/music-vector-visualization.git && cd music-vector-visualization```
 1. *Starten von Docker*\
   macOS: ```sh open -a docker```
 2. *Starten der Docker-container*\
