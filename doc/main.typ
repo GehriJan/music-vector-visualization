@@ -55,7 +55,8 @@ _Am besten_ bedeutet hier, dass die Varianz der Projektionen auf diese Linie max
 
 #figure(
   image("assets/pca_example.png"),
-  caption: [Veranschaulichung von #acr("PCA") mit $n = k = 2$]
+  caption: [Veranschaulichung von #acr("PCA") mit $n = k = 2$\
+    _Hinweis: Zur Erstellung des Codes für dieses Beispiel wurde ChatGPT verwendet. Der Source-code befindet sich ebenfalls im Repository unter `doc/assets`_]
 )
 
 == #acrfull("t-SNE")
